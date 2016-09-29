@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Android 主要的热修复方案原理分析 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="目前较为成熟的热修复框架主要有AndFix、Nuwa以及微信的热更新思想。现在将其主要思想总结如下：
+AndFixAndFix是支付宝开源的一套热修复框架，使用简单，成功率高，基本满足大多数的bug修复场景。引入到项目中非常方便，主要分两步：
+
+代码整合
+
+build.gradle添加依赖 compile ‘com.alipay.euler:andfix:0.4.0@aar’
+Applicatio">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android 主要的热修复方案原理分析">
+<meta property="og:url" content="http://yoursite.com/2016/09/29/Android-主要的热修复方案原理分析/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="目前较为成熟的热修复框架主要有AndFix、Nuwa以及微信的热更新思想。现在将其主要思想总结如下：
+AndFixAndFix是支付宝开源的一套热修复框架，使用简单，成功率高，基本满足大多数的bug修复场景。引入到项目中非常方便，主要分两步：
+
+代码整合
+
+build.gradle添加依赖 compile ‘com.alipay.euler:andfix:0.4.0@aar’
+Applicatio">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/2023045-706b8167f9dc514a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2016-09-29T07:24:06.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android 主要的热修复方案原理分析">
+<meta name="twitter:description" content="目前较为成熟的热修复框架主要有AndFix、Nuwa以及微信的热更新思想。现在将其主要思想总结如下：
+AndFixAndFix是支付宝开源的一套热修复框架，使用简单，成功率高，基本满足大多数的bug修复场景。引入到项目中非常方便，主要分两步：
+
+代码整合
+
+build.gradle添加依赖 compile ‘com.alipay.euler:andfix:0.4.0@aar’
+Applicatio">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/2023045-706b8167f9dc514a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Zoeken"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Android-主要的热修复方案原理分析" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/09/29/Android-主要的热修复方案原理分析/" class="article-date">
+  <time datetime="2016-09-29T07:23:43.000Z" itemprop="datePublished">2016-09-29</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Android 主要的热修复方案原理分析
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>目前较为成熟的热修复框架主要有AndFix、Nuwa以及微信的热更新思想。现在将其主要思想总结如下：</p>
+<h1 id="AndFix"><a href="#AndFix" class="headerlink" title="AndFix"></a>AndFix</h1><p><a href="https://github.com/alibaba/AndFix" target="_blank" rel="external">AndFix</a>是支付宝开源的一套热修复框架，使用简单，成功率高，基本满足大多数的bug修复场景。引入到项目中非常方便，主要分两步：</p>
+<ul>
+<li><p>代码整合</p>
+<ul>
+<li>build.gradle添加依赖 compile ‘com.alipay.euler:andfix:0.4.0@aar’</li>
+<li><p>Application.onCreate()方法中添加</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">PatchManager patchManager = new PatchManager(this);</div><div class="line">patchManager.init(appversion);//current version</div><div class="line">patchManager.loadPatch();</div></pre></td></tr></table></figure>
+<p>然后和后端协商一个补丁包下载服务器，在每次下载更新包到本地后</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">patchManager.addPatch(path);</div></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>打补丁<br>AndFix提供了一个打补丁包的工具，可以<a href="https://raw.githubusercontent.com/alibaba/AndFix/master/tools/apkpatch-1.0.3.zip" target="_blank" rel="external">去这里</a>下载，使用方法如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">apkpatch -f &lt;new&gt; -t &lt;old&gt; -o &lt;output&gt; -k &lt;keystore&gt; -p &lt;***&gt; -a &lt;alias&gt; -e &lt;***&gt;</div><div class="line"> -a,--alias &lt;alias&gt;     keystore entry alias.</div><div class="line"> -e,--epassword &lt;***&gt;   keystore entry password.</div><div class="line"> -f,--from &lt;loc&gt;        new Apk file path.</div><div class="line"> -k,--keystore &lt;loc&gt;    keystore path.</div><div class="line"> -n,--name &lt;name&gt;       patch name.</div><div class="line"> -o,--out &lt;dir&gt;         output dir.</div><div class="line"> -p,--kpassword &lt;***&gt;   keystore password.</div><div class="line"> -t,--to &lt;loc&gt;          old Apk file path.</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>AndFix的思想是直接更改修复的方法，具体我们可以看源码。先从PatchManager的init和load方法入手，这两个方法实现了补丁包的加载并最终调用了AndFixManager的fix方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">for (Patch patch : mPatchs) &#123;</div><div class="line">			patchNames = patch.getPatchNames();</div><div class="line">			if (patchNames.contains(patchName)) &#123;</div><div class="line">				classes = patch.getClasses(patchName);</div><div class="line">				mAndFixManager.fix(patch.getFile(), classLoader, classes);</div><div class="line">			&#125;</div><div class="line">		&#125;</div></pre></td></tr></table></figure></p>
+<p>fix函数需要传入三个参数：patch文件、classloader以及需要fix的class列表。fix函数代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * fix</div><div class="line"> * </div><div class="line"> * @param file</div><div class="line"> *            patch file</div><div class="line"> * @param classLoader</div><div class="line"> *            classloader of class that will be fixed</div><div class="line"> * @param classes</div><div class="line"> *            classes will be fixed</div><div class="line"> */</div><div class="line">public synchronized void fix(File file, ClassLoader classLoader,</div><div class="line">		List&lt;String&gt; classes) &#123;</div><div class="line">	</div><div class="line">	    .......省略........</div><div class="line">           //load dex文件</div><div class="line">		final DexFile dexFile = DexFile.loadDex(file.getAbsolutePath(),</div><div class="line">				optfile.getAbsolutePath(), Context.MODE_PRIVATE);</div><div class="line"></div><div class="line">		if (saveFingerprint) &#123;</div><div class="line">			mSecurityChecker.saveOptSig(optfile);</div><div class="line">		&#125;</div><div class="line">          // 定义自己的classloader</div><div class="line">		ClassLoader patchClassLoader = new ClassLoader(classLoader) &#123;</div><div class="line">			@Override</div><div class="line">			protected Class&lt;?&gt; findClass(String className)</div><div class="line">					throws ClassNotFoundException &#123;</div><div class="line">				Class&lt;?&gt; clazz = dexFile.loadClass(className, this);</div><div class="line">				if (clazz == null</div><div class="line">						&amp;&amp; className.startsWith(&quot;com.alipay.euler.andfix&quot;)) &#123;</div><div class="line">					return Class.forName(className);// annotation’s class</div><div class="line">													// not found</div><div class="line">				&#125;</div><div class="line">				if (clazz == null) &#123;</div><div class="line">					throw new ClassNotFoundException(className);</div><div class="line">				&#125;</div><div class="line">				return clazz;</div><div class="line">			&#125;</div><div class="line">		&#125;;</div><div class="line">		Enumeration&lt;String&gt; entrys = dexFile.entries();</div><div class="line">		Class&lt;?&gt; clazz = null;</div><div class="line">		while (entrys.hasMoreElements()) &#123;</div><div class="line">			String entry = entrys.nextElement();</div><div class="line">			if (classes != null &amp;&amp; !classes.contains(entry)) &#123;</div><div class="line">				continue;// skip, not need fix</div><div class="line">			&#125;</div><div class="line">			clazz = dexFile.loadClass(entry, patchClassLoader);</div><div class="line">			if (clazz != null) &#123;</div><div class="line">				fixClass(clazz, classLoader);</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125; catch (IOException e) &#123;</div><div class="line">		Log.e(TAG, &quot;pacth&quot;, e);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这个方法的作用是load dex文件中的类，并依次修复，这个函数中有两处疑问：</p>
+<ul>
+<li>classes参数设计有何深意，因为我理解的patch包里面难道不都是需要修复的类吗，还会把没有修改的类打进去吗？</li>
+<li>自定义了一个classloader,针对”com.alipay.euler.andfix”做了特殊处理，不知道怎么才会有这种场景。<br>针对这两个问题我特意咨询了AndFix的作者黎三平大神，大神给我的答复是：1. 这个设计有两个原因：<br>a） 新增类<br>b）早期patch工具打出的补丁包不是很准确<br>2.AndFix的一个注解，它的类加载会走到这来的。<br>大神的话还是不是很明白，大家如果看到了这块代码请帮我解释一下。</li>
+</ul>
+<p>fix函数中遍历dex的类，并过滤掉不需要修复的类后调用fixclass函数，代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">private void fixClass(Class&lt;?&gt; clazz, ClassLoader classLoader) &#123;</div><div class="line">	Method[] methods = clazz.getDeclaredMethods();</div><div class="line">	MethodReplace methodReplace;</div><div class="line">	String clz;</div><div class="line">	String meth;</div><div class="line">	for (Method method : methods) &#123;</div><div class="line">		methodReplace = method.getAnnotation(MethodReplace.class);</div><div class="line">		if (methodReplace == null)</div><div class="line">			continue;</div><div class="line">		clz = methodReplace.clazz();</div><div class="line">		meth = methodReplace.method();</div><div class="line">		if (!isEmpty(clz) &amp;&amp; !isEmpty(meth)) &#123;</div><div class="line">			replaceMethod(classLoader, clz, meth, method);</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p> 代码很简洁，意思也很明了，就是找到这个类中需要修复的函数然后调用replaceMethod方法。替换方法在java层是无法做到的，所以这个函数最终还是调用了native的替换函数的方法，实质就是更改了类中方法所指向的地址，所以java不能做到。</p>
+<p>jin的目录结构如下：<br><img src="http://upload-images.jianshu.io/upload_images/2023045-706b8167f9dc514a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="AndFix Jni结构.png"></p>
+<p>AndFix做了dalvik、art以及各平台的适配，核心是方法的替换，我们来看其中一个方法替换的函数：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">extern void __attribute__ ((visibility (&quot;hidden&quot;))) dalvik_replaceMethod(</div><div class="line">		JNIEnv* env, jobject src, jobject dest) &#123;</div><div class="line">	jobject clazz = env-&gt;CallObjectMethod(dest, jClassMethod);</div><div class="line">	ClassObject* clz = (ClassObject*) dvmDecodeIndirectRef_fnPtr(</div><div class="line">			dvmThreadSelf_fnPtr(), clazz);</div><div class="line">	clz-&gt;status = CLASS_INITIALIZED;</div><div class="line"></div><div class="line">	Method* meth = (Method*) env-&gt;FromReflectedMethod(src);</div><div class="line">	Method* target = (Method*) env-&gt;FromReflectedMethod(dest);</div><div class="line">	LOGD(&quot;dalvikMethod: %s&quot;, meth-&gt;name);</div><div class="line"></div><div class="line">	meth-&gt;clazz = target-&gt;clazz;</div><div class="line">	meth-&gt;accessFlags |= ACC_PUBLIC;</div><div class="line">	meth-&gt;methodIndex = target-&gt;methodIndex;</div><div class="line">	meth-&gt;jniArgInfo = target-&gt;jniArgInfo;</div><div class="line">	meth-&gt;registersSize = target-&gt;registersSize;</div><div class="line">	meth-&gt;outsSize = target-&gt;outsSize;</div><div class="line">	meth-&gt;insSize = target-&gt;insSize;</div><div class="line"></div><div class="line">	meth-&gt;prototype = target-&gt;prototype;</div><div class="line">	meth-&gt;insns = target-&gt;insns;</div><div class="line">	meth-&gt;nativeFunc = target-&gt;nativeFunc;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>含义估计大家都明白，就是把方法的各个属性值替换，实际去写确实还是很有难度。</p>
+<p>至此我把AndFix代码的主要流程梳理了一遍，其中还有很多没有get到的点，思想基本清楚了，AndFix主要采用替换方法的方式进行热修复，好处是立即生效且补丁包较小，但是只能基于方法修复，而且对平台的兼容性不佳，但不失为一个伟大的想法，也是热修复最早开源的修复方案，向我的黎三平大神说声感谢！</p>
+<h1 id="Nuwa"><a href="#Nuwa" class="headerlink" title="Nuwa"></a>Nuwa</h1><p>AndFix的思路很简单，直接在native层替代方法，有没有更简单的呢，有，<a href="https://github.com/jasonross/Nuwa" target="_blank" rel="external">Nuwa</a>！他的想法就更自然一些，直接替换类，或者废弃掉有bug的类，怎么做到的呢，核心就在于java.lang.ClassLoader.java这个类的loadClass方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">protected Class&lt;?&gt; loadClass(String className, boolean resolve) throws ClassNotFoundException &#123;</div><div class="line">       Class&lt;?&gt; clazz = findLoadedClass(className);</div><div class="line"></div><div class="line">       if (clazz == null) &#123;</div><div class="line">           ClassNotFoundException suppressed = null;</div><div class="line">           try &#123;</div><div class="line">               clazz = parent.loadClass(className, false);</div><div class="line">           &#125; catch (ClassNotFoundException e) &#123;</div><div class="line">               suppressed = e;</div><div class="line">           &#125;</div><div class="line"></div><div class="line">           if (clazz == null) &#123;</div><div class="line">               try &#123;</div><div class="line">                   clazz = findClass(className);</div><div class="line">               &#125; catch (ClassNotFoundException e) &#123;</div><div class="line">                   e.addSuppressed(suppressed);</div><div class="line">                   throw e;</div><div class="line">               &#125;</div><div class="line">           &#125;</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       return clazz;</div><div class="line">   &#125;</div></pre></td></tr></table></figure></p>
+<p>同名的类加载一次就不再加载了，是不是想到什么了，哈哈，对，就是把你要修复的类提前加载就ok了，那么有bug的类便不再加载进来，实现起来也非常简单，三行代码搞定，我们看Nuwa的实现：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">public static void injectDexAtFirst(String dexPath, String defaultDexOptPath) throws NoSuchFieldException, IllegalAccessException, ClassNotFoundException &#123;</div><div class="line">    //新建补丁包的dexclassloader</div><div class="line">    DexClassLoader dexClassLoader = new DexClassLoader(dexPath, defaultDexOptPath, dexPath, getPathClassLoader());</div><div class="line">    //获取原dex加载列表 </div><div class="line">    Object baseDexElements = getDexElements(getPathList(getPathClassLoader()));</div><div class="line">    // 新建补丁包dex加载列表</div><div class="line">    Object newDexElements = getDexElements(getPathList(dexClassLoader));</div><div class="line">    //补丁包插在最前连接成新的dex加载列表</div><div class="line">    Object allDexElements = combineArray(newDexElements, baseDexElements);</div><div class="line">    Object pathList = getPathList(getPathClassLoader());</div><div class="line">    //利用发射修改dalvik.system.BaseDexClassLoader类的pathList中的dexElements属性</div><div class="line">    ReflectionUtils.setField(pathList, pathList.getClass(), &quot;dexElements&quot;, allDexElements);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>就这么几行代码就实现了替换类的热修复，没有native的操作，思路清晰，含义明确。当然这里面还有一个坑就是类加载的时候会有一个标记一个类和另外在同一个dex中的标记，所以打出补丁包之后会报 “两个类所在的dex不在一起” 的错误，这个也好办，打出一个单独的dex，里面只有一个类，让每个类都引用这个类，这样就使得每个类的标记都是false。Nuwa实现了这个插入引用单独类的插件，对使用者非常友好。</p>
+<p>Nuwa能自由的修改和添加类，功能更加强大，不过这里面隐含了一个缺陷就是hook  classloader的dexElements必须在所有类没有加载之前进行，所以一般放在application的oncreate方法中，这样就导致了每次发布补丁必须重启app才能生效。</p>
+<h1 id="微信的热修复方案"><a href="#微信的热修复方案" class="headerlink" title="微信的热修复方案"></a>微信的热修复方案</h1><p>其实技术方案的迭代也是思绪不断延伸的过程，看过Nuwa的热修复方案之后，是不是会想到有没有更简单更优雅的方式，有！其实很容易想到，我们在客户端实现补丁包的逻辑是什么呢，无非是比较两个dex中类文件发生更改的类提取出来，打成新的补丁dex，那这个过程能不能在客户端逆向操作一次呢，直接将差分包和原dex进行融合，形成新的dex，这样代码就不用做任何修改了，答案是肯定的。微信在一篇博客中阐述了自己热修复方案的主要思路(<a href="http://www.tuicool.com/articles/uym2QrU" target="_blank" rel="external">微信Android热补丁实践演进之路</a>)。没有具体实现，主要可能是文件权限的一些坑，但是像微信这样的app架构中，肯定是做了精准的分包处理，自己管理dex的加载策略，所以实现起来应该非常顺利。<br>微信在文中也坦言做热修复起源于15年6月，相对较晚，也可以综合比较之后设计出适合自己的方案。</p>
+<p>以上是目前比较成熟的几个热修复方案，只是整理了主要思想，还有很多黑科技没有get到，希望对大家能有所帮助。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/09/29/Android-主要的热修复方案原理分析/" data-id="cito0mhj700009ctol9bo0bx4" class="article-share-link">Delen</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2016/09/29/RecyclerView高端定制三部曲/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Ouder</strong>
+      <div class="article-nav-title">RecyclerView高端定制三部曲</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archieven</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recente berichten</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/09/29/Android-主要的热修复方案原理分析/">Android 主要的热修复方案原理分析</a>
+          </li>
+        
+          <li>
+            <a href="/2016/09/29/RecyclerView高端定制三部曲/">RecyclerView高端定制三部曲</a>
+          </li>
+        
+          <li>
+            <a href="/2016/09/29/Dagger2从入门到会用再到暂时放弃/">Dagger2从入门到会用再到暂时放弃</a>
+          </li>
+        
+          <li>
+            <a href="/2016/09/29/Fresco源码浅析-ImagePipeline模块（三）/">Fresco源码浅析-ImagePipeline模块（三）</a>
+          </li>
+        
+          <li>
+            <a href="/2016/09/29/Fresco源码浅析-Drawee模块（二）/">Fresco源码浅析-Drawee模块（二）</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>RecyclerView高端定制三部曲 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="RecyclerView随V7拓展包发布以来，因其高效和使用便利，基本取代了listview和gridview，成为了使用频率最高的控件之一。默认的设置基本能满足大部分场景，如果需要更好的体验，需要自定义以下三个部分的内容：
+
+Animator
+ItemDecoration
+LayoutManager
+
+自定义Animator自定义Animator可以实现各种绚丽的动画效果，RecyclerVie">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RecyclerView高端定制三部曲">
+<meta property="og:url" content="http://yoursite.com/2016/09/29/RecyclerView高端定制三部曲/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="RecyclerView随V7拓展包发布以来，因其高效和使用便利，基本取代了listview和gridview，成为了使用频率最高的控件之一。默认的设置基本能满足大部分场景，如果需要更好的体验，需要自定义以下三个部分的内容：
+
+Animator
+ItemDecoration
+LayoutManager
+
+自定义Animator自定义Animator可以实现各种绚丽的动画效果，RecyclerVie">
+<meta property="og:image" content="http://yoursite.com/img/设计图.png">
+<meta property="og:image" content="http://yoursite.com/img/效果图.png">
+<meta property="og:updated_time" content="2016-09-29T07:23:12.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RecyclerView高端定制三部曲">
+<meta name="twitter:description" content="RecyclerView随V7拓展包发布以来，因其高效和使用便利，基本取代了listview和gridview，成为了使用频率最高的控件之一。默认的设置基本能满足大部分场景，如果需要更好的体验，需要自定义以下三个部分的内容：
+
+Animator
+ItemDecoration
+LayoutManager
+
+自定义Animator自定义Animator可以实现各种绚丽的动画效果，RecyclerVie">
+<meta name="twitter:image" content="http://yoursite.com/img/设计图.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Zoeken"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-RecyclerView高端定制三部曲" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/09/29/RecyclerView高端定制三部曲/" class="article-date">
+  <time datetime="2016-09-29T07:22:18.000Z" itemprop="datePublished">2016-09-29</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      RecyclerView高端定制三部曲
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>RecyclerView随V7拓展包发布以来，因其高效和使用便利，基本取代了listview和gridview，成为了使用频率最高的控件之一。默认的设置基本能满足大部分场景，如果需要更好的体验，需要自定义以下三个部分的内容：</p>
+<ul>
+<li><h6 id="Animator"><a href="#Animator" class="headerlink" title="Animator"></a>Animator</h6></li>
+<li><h6 id="ItemDecoration"><a href="#ItemDecoration" class="headerlink" title="ItemDecoration"></a>ItemDecoration</h6></li>
+<li><h6 id="LayoutManager"><a href="#LayoutManager" class="headerlink" title="LayoutManager"></a>LayoutManager</h6></li>
+</ul>
+<h1 id="自定义Animator"><a href="#自定义Animator" class="headerlink" title="自定义Animator"></a>自定义Animator</h1><p>自定义Animator可以实现各种绚丽的动画效果，RecyclerView动画相关的类主要有三个：</p>
+<ul>
+<li><h6 id="RecyclerView-ItemAnimator"><a href="#RecyclerView-ItemAnimator" class="headerlink" title="RecyclerView.ItemAnimator"></a>RecyclerView.ItemAnimator</h6></li>
+<li><h6 id="SimpleItemAnimator"><a href="#SimpleItemAnimator" class="headerlink" title="SimpleItemAnimator"></a>SimpleItemAnimator</h6></li>
+<li><h6 id="DefaultItemAnimator"><a href="#DefaultItemAnimator" class="headerlink" title="DefaultItemAnimator"></a>DefaultItemAnimator</h6></li>
+</ul>
+<p>RecyclerView.ItemAnimator是自定义RecyclerView动画效果的核心类，当继承一个ItemAnimator时，有如下几个方法需要被实现：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line">//当一个ViewHolder从RecyclerView里面消失时调用,不一定是移除，也有可能是move操作</div><div class="line">@Override  </div><div class="line">    public boolean animateDisappearance(RecyclerView.ViewHolder viewHolder, ItemHolderInfo preLayoutInfo, ItemHolderInfo postLayoutInfo) &#123;  </div><div class="line">        return false;  </div><div class="line">    &#125;  </div><div class="line">  //当一个ViewHolder从RecyclerView里面显示时调用,不一定是新增，也有可能是move操作</div><div class="line">    @Override  </div><div class="line">    public boolean animateAppearance(RecyclerView.ViewHolder viewHolder, ItemHolderInfo preLayoutInfo, ItemHolderInfo postLayoutInfo) &#123;  </div><div class="line">        return false;  </div><div class="line">    &#125;  </div><div class="line">  //没有调用notify而引起布局的改变，比如滑动</div><div class="line">    @Override  </div><div class="line">    public boolean animatePersistence(RecyclerView.ViewHolder viewHolder, ItemHolderInfo preLayoutInfo, ItemHolderInfo postLayoutInfo) &#123;  </div><div class="line">        return false;  </div><div class="line">    &#125;  </div><div class="line">  //item发生改变的时候调用</div><div class="line">    @Override  </div><div class="line">    public boolean animateChange(RecyclerView.ViewHolder oldHolder, RecyclerView.ViewHolder newHolder, ItemHolderInfo preLayoutInfo, ItemHolderInfo postLayoutInfo) &#123;  </div><div class="line">        return false;  </div><div class="line">    &#125;  </div><div class="line">  //统筹RecyclerView中所有的动画，统一启动执行,一般的思路是在前面几个函数调用中放入一个动画列表，在这个函数中统一执行</div><div class="line">    @Override  </div><div class="line">    public void runPendingAnimations() &#123;  </div><div class="line">  </div><div class="line">    &#125;  </div><div class="line">  //结束某一个item的动画</div><div class="line">    @Override  </div><div class="line">    public void endAnimation(RecyclerView.ViewHolder item) &#123;  </div><div class="line">    &#125;  </div><div class="line">  //结束所有的动画</div><div class="line">    @Override  </div><div class="line">    public void endAnimations() &#123; </div><div class="line">    &#125;  </div><div class="line">  //动画是否执行过程中</div><div class="line">    @Override  </div><div class="line">    public boolean isRunning() &#123;  </div><div class="line">        return false;  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>SimpleItemAnimator对RecyclerView.ItemAnimator实现了简单的封装，将基本的ItemAnimator不同场景拆分成我们熟悉的四种场景：add、remove、move、change。所以我们如果实现自定义的动画，继承自SimpleItemAnimator会更容易实现，这也是较为普遍的做法。</p>
+<p>DefaultItemAnimator是RecyclerView默认的动画效果，只有一个fadein和fadeout的渐变动画，开始看代码的时候一直有一个疑问，默认的动画效果明明是一个先展开然后插入的动画啊，哪里是渐变的效果。对比了各种动画效果之后发现，这里实现的动画效果只是针对item出现或者消失时的动画，位置展开是RecylerView固定的效果，具体代码没有去源码中跟踪，调用notifyItemInserted函数刷新界面时，先执行对应位置的展开再执行item的动画效果，我们自定义动画就是实现这个item出现的方式，位置展开和收缩是固定的。V7拓展包23.0版本DefaultItemAnimator继承自RecyclerView.ItemAnimator，23.1版本就直接继承自SimpleItemAnimator。</p>
+<p>我们参照DefaultItemAnimator的方式实现我们自定义的动画效果。其中最主要的删除和新增实现如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div></pre></td><td class="code"><pre><div class="line">private void animateRemoveImpl(final RecyclerView.ViewHolder holder) &#123;</div><div class="line">    final View view = holder.itemView;</div><div class="line">    final ViewPropertyAnimatorCompat animation = ViewCompat.animate(view);</div><div class="line">    mRemoveAnimations.add(holder);</div><div class="line">    animation.setDuration(getRemoveDuration())</div><div class="line">            .alpha(0).setListener(new VpaListenerAdapter() &#123;</div><div class="line">        @Override</div><div class="line">        public void onAnimationStart(View view) &#123;</div><div class="line">            dispatchRemoveStarting(holder);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public void onAnimationEnd(View view) &#123;</div><div class="line">            animation.setListener(null);</div><div class="line">            ViewCompat.setAlpha(view, 1);</div><div class="line">            dispatchRemoveFinished(holder);</div><div class="line">            mRemoveAnimations.remove(holder);</div><div class="line">            dispatchFinishedWhenDone();</div><div class="line">        &#125;</div><div class="line">    &#125;).start();</div><div class="line">&#125;</div><div class="line"></div><div class="line">private void animateAddImpl(final RecyclerView.ViewHolder holder) &#123;</div><div class="line">    final View view = holder.itemView;</div><div class="line">    final ViewPropertyAnimatorCompat animation = ViewCompat.animate(view);</div><div class="line">    mAddAnimations.add(holder);</div><div class="line">    animation.alpha(1).setDuration(getAddDuration()).</div><div class="line">            setListener(new VpaListenerAdapter() &#123;</div><div class="line">                @Override</div><div class="line">                public void onAnimationStart(View view) &#123;</div><div class="line">                    dispatchAddStarting(holder);</div><div class="line">                &#125;</div><div class="line">                @Override</div><div class="line">                public void onAnimationCancel(View view) &#123;</div><div class="line">                    ViewCompat.setAlpha(view, 1);</div><div class="line">                &#125;</div><div class="line"></div><div class="line">                @Override</div><div class="line">                public void onAnimationEnd(View view) &#123;</div><div class="line">                    animation.setListener(null);</div><div class="line">                    dispatchAddFinished(holder);</div><div class="line">                    mAddAnimations.remove(holder);</div><div class="line">                    dispatchFinishedWhenDone();</div><div class="line">                &#125;</div><div class="line">            &#125;).start();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>其中写死了animation的效果，而又无法重载，我们将DefaultItemAnimator的代码完全拷出，实现一个可配置动画的BaseItemAnimator类。主要替换的代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div></pre></td><td class="code"><pre><div class="line">private void animateRemoveImpl(final RecyclerView.ViewHolder holder) &#123;</div><div class="line">    mRemoveAnimations.add(holder);</div><div class="line">    final ViewPropertyAnimatorCompat animation = getRemoveAnimator(holder);</div><div class="line">    animation.setDuration(getRemoveDuration()).setListener(new VpaListenerAdapter() &#123;</div><div class="line">                @Override</div><div class="line">                public void onAnimationStart(View view) &#123;</div><div class="line">                    dispatchRemoveStarting(holder);</div><div class="line">                &#125;</div><div class="line">                @Override</div><div class="line">                public void onAnimationEnd(View view) &#123;</div><div class="line">                    animation.setListener(null);</div><div class="line">                    clear(view);</div><div class="line">                    dispatchRemoveFinished(holder);</div><div class="line">                    mRemoveAnimations.remove(holder);</div><div class="line">                    dispatchFinishedWhenDone();</div><div class="line">                &#125;</div><div class="line">            &#125;);</div><div class="line">    animation.start();</div><div class="line">&#125;</div><div class="line"></div><div class="line">private void animateAddImpl(final RecyclerView.ViewHolder holder) &#123;</div><div class="line">    mAddAnimations.add(holder);</div><div class="line">    final ViewPropertyAnimatorCompat animation = getAddAnimator(holder);</div><div class="line">    animation.setDuration(getAddDuration()).</div><div class="line">            setListener(new VpaListenerAdapter() &#123;</div><div class="line">                @Override</div><div class="line">                public void onAnimationStart(View view) &#123;</div><div class="line">                    ViewCompat.setAlpha(view,1);</div><div class="line">                    dispatchAddStarting(holder);</div><div class="line">                &#125;</div><div class="line">                @Override</div><div class="line">                public void onAnimationCancel(View view) &#123;</div><div class="line">                    clear(view);</div><div class="line">                &#125;</div><div class="line"></div><div class="line">                @Override</div><div class="line">                public void onAnimationEnd(View view) &#123;</div><div class="line">                    animation.setListener(null);</div><div class="line">                    dispatchAddFinished(holder);</div><div class="line">                    mAddAnimations.remove(holder);</div><div class="line">                    dispatchFinishedWhenDone();</div><div class="line">                &#125;</div><div class="line">            &#125;).start();</div><div class="line">&#125;</div><div class="line"></div><div class="line">protected abstract ViewPropertyAnimatorCompat getAddAnimator(RecyclerView.ViewHolder viewHolder);</div><div class="line">protected abstract ViewPropertyAnimatorCompat getRemoveAnimator(RecyclerView.ViewHolder viewHolder);</div><div class="line"></div><div class="line">public void clear(View v) &#123;</div><div class="line">    ViewCompat.setAlpha(v, 1);</div><div class="line">    ViewCompat.setScaleY(v, 1);</div><div class="line">    ViewCompat.setScaleX(v, 1);</div><div class="line">    ViewCompat.setTranslationY(v, 0);</div><div class="line">    ViewCompat.setTranslationX(v, 0);</div><div class="line">    ViewCompat.setRotation(v, 0);</div><div class="line">    ViewCompat.setRotationY(v, 0);</div><div class="line">    ViewCompat.setRotationX(v, 0);</div><div class="line">    ViewCompat.setPivotY(v, v.getMeasuredHeight() / 2);</div><div class="line">    ViewCompat.setPivotX(v, v.getMeasuredWidth() / 2);</div><div class="line">    ViewCompat.animate(v).setInterpolator(null).setStartDelay(0);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>接下来我们就可以继承BaseItemAnimator类实现自己的动画效果，下面给出一个示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">protected ViewPropertyAnimatorCompat getAddAnimator(RecyclerView.ViewHolder item) &#123;</div><div class="line">    ViewCompat.setTranslationX(item.itemView, -item.itemView.getWidth());</div><div class="line">    return ViewCompat.animate(item.itemView).translationX(0);</div><div class="line">&#125;</div><div class="line">@Override</div><div class="line">protected ViewPropertyAnimatorCompat getRemoveAnimator(RecyclerView.ViewHolder item) &#123;</div><div class="line">    return ViewCompat.animate(item.itemView).translationX(item.itemView.getWidth());</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>详细代码见<a href="https://github.com/pandavickey/CustomFeature-RecyclerView" target="_blank" rel="external">github</a></p>
+<h1 id="自定义ItemDecoration"><a href="#自定义ItemDecoration" class="headerlink" title="自定义ItemDecoration"></a>自定义ItemDecoration</h1><p>自定义ItemDecoration需要继承RecyclerView.ItemDecoration抽象类，源码很简单：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">public static abstract class ItemDecoration &#123;</div><div class="line">    public void onDraw(Canvas c, RecyclerView parent, State state) &#123;</div><div class="line">        onDraw(c, parent);</div><div class="line">    &#125;</div><div class="line">    @Deprecated</div><div class="line">    public void onDraw(Canvas c, RecyclerView parent) &#123;</div><div class="line">    &#125;</div><div class="line">    public void onDrawOver(Canvas c, RecyclerView parent, State state) &#123;</div><div class="line">        onDrawOver(c, parent);</div><div class="line">    &#125;</div><div class="line">    @Deprecated</div><div class="line">    public void onDrawOver(Canvas c, RecyclerView parent) &#123;</div><div class="line">    &#125;</div><div class="line">    @Deprecated</div><div class="line">    public void getItemOffsets(Rect outRect, int itemPosition, RecyclerView parent) &#123;</div><div class="line">        outRect.set(0, 0, 0, 0);</div><div class="line">    &#125;</div><div class="line">    public void getItemOffsets(Rect outRect, View view, RecyclerView parent, State state) &#123;</div><div class="line">        getItemOffsets(outRect, ((LayoutParams) view.getLayoutParams()).getViewLayoutPosition(),</div><div class="line">                parent);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>官方推荐使用含有state参数的方法，所以主要就是重载三个方法：</p>
+<ul>
+<li>onDraw(Canvas c, RecyclerView parent, State state)</li>
+<li>onDrawOver(Canvas c, RecyclerView parent, State state)</li>
+<li>getItemOffsets(Rect outRect, View view, RecyclerView parent, State state)</li>
+</ul>
+<p>onDraw用于绘制divider，它是绘制在item下面的，所以中间部分会被item遮挡住；<br>onDrawOver绘制在item上面，所以不受位置的限制；<br>getItemOffsets实际上就是给每个item一个padding，实现item之间的间隙。</p>
+<p>实际业务中我们经常会遇到这样的需求，一个可选择的gridview，选中与否有不同的边框，效果图如下：</p>
+<p><img src="/img/设计图.png" alt="设计图"></p>
+<p>以我有限的界面开发经验，不管如何控制，要实现每个分割线都是相同的宽度，选中界面的边框正好压盖周围的边框还是很有难度的，看到recyclerview的自定义ItemDecoration才终于发现一道曙光。</p>
+<p>我的做法是在getItemOffsets函数中，我判断一个item上下左右是否有临近的item，没有的话给两倍的dividerwidth，否则一倍的dividerwidth，这样就能控制所有的item四周都是有同样宽度的间隙。然后在onDrawOver中实现每个item分割线的绘制，同时判断是否选中，再绘制选中的边框，整体效果如下：</p>
+<p><img src="/img/效果图.png" alt="效果图"></p>
+<p>还是完美的实现了UI妹子要求的效果(^_^)。</p>
+<p>详细代码见<a href="https://github.com/pandavickey/CustomFeature-RecyclerView" target="_blank" rel="external">github</a></p>
+<h1 id="自定义LayoutManager"><a href="#自定义LayoutManager" class="headerlink" title="自定义LayoutManager"></a>自定义LayoutManager</h1><p>LayoutManager可以说是整个RecyclerView的精髓，整个RecyclerView的Recycler也是在LayoutManager做的，官方目前提供了LinearLayoutManager、GridLayoutManager和StaggeredGridLayoutManager三种LayoutManager，分别使用在线性、方格以及不规则瀑布流的场景，基本上实现了日常的大部分需求。目前精力有限，后续再做分解。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/09/29/RecyclerView高端定制三部曲/" data-id="cito0mhjh00049ctopywe9n9a" class="article-share-link">Delen</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/09/29/Android-主要的热修复方案原理分析/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Nieuwer</strong>
+      <div class="article-nav-title">
+        
+          Android 主要的热修复方案原理分析
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/09/29/Dagger2从入门到会用再到暂时放弃/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Ouder</strong>
+      <div class="article-nav-title">Dagger2从入门到会用再到暂时放弃</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archieven</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recente berichten</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/09/29/Android-主要的热修复方案原理分析/">Android 主要的热修复方案原理分析</a>
+          </li>
+        
+          <li>
+            <a href="/2016/09/29/RecyclerView高端定制三部曲/">RecyclerView高端定制三部曲</a>
+          </li>
+        
+          <li>
+            <a href="/2016/09/29/Dagger2从入门到会用再到暂时放弃/">Dagger2从入门到会用再到暂时放弃</a>
+          </li>
+        
+          <li>
+            <a href="/2016/09/29/Fresco源码浅析-ImagePipeline模块（三）/">Fresco源码浅析-ImagePipeline模块（三）</a>
+          </li>
+        
+          <li>
+            <a href="/2016/09/29/Fresco源码浅析-Drawee模块（二）/">Fresco源码浅析-Drawee模块（二）</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

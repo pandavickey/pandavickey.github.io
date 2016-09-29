@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Fresco源码浅析-Drawee模块（二） | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Drawee模块负责图片的展示，主要涉及到的概念包括DraweeView（V）、DraweeHierarchy(M)、DraweeController(C),这是一个典型的MVC的结构。
+DraweeView（V）使用Fresco的时候，我们首先直接使用SimpleDraweeView这个官方自定义的控件，它的继承结构是这样的：
+SimpleDraweeView主要实现了setImageURI方法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Fresco源码浅析-Drawee模块（二）">
+<meta property="og:url" content="http://yoursite.com/2016/09/29/Fresco源码浅析-Drawee模块（二）/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Drawee模块负责图片的展示，主要涉及到的概念包括DraweeView（V）、DraweeHierarchy(M)、DraweeController(C),这是一个典型的MVC的结构。
+DraweeView（V）使用Fresco的时候，我们首先直接使用SimpleDraweeView这个官方自定义的控件，它的继承结构是这样的：
+SimpleDraweeView主要实现了setImageURI方法">
+<meta property="og:image" content="http://yoursite.com/img/SimpleDraweeView类继承关系.png">
+<meta property="og:updated_time" content="2016-09-29T07:17:44.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Fresco源码浅析-Drawee模块（二）">
+<meta name="twitter:description" content="Drawee模块负责图片的展示，主要涉及到的概念包括DraweeView（V）、DraweeHierarchy(M)、DraweeController(C),这是一个典型的MVC的结构。
+DraweeView（V）使用Fresco的时候，我们首先直接使用SimpleDraweeView这个官方自定义的控件，它的继承结构是这样的：
+SimpleDraweeView主要实现了setImageURI方法">
+<meta name="twitter:image" content="http://yoursite.com/img/SimpleDraweeView类继承关系.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Zoeken"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Fresco源码浅析-Drawee模块（二）" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/09/29/Fresco源码浅析-Drawee模块（二）/" class="article-date">
+  <time datetime="2016-09-29T07:01:07.000Z" itemprop="datePublished">2016-09-29</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Fresco源码浅析-Drawee模块（二）
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Drawee模块负责图片的展示，主要涉及到的概念包括DraweeView（V）、DraweeHierarchy(M)、DraweeController(C),这是一个典型的MVC的结构。</p>
+<h1 id="DraweeView（V）"><a href="#DraweeView（V）" class="headerlink" title="DraweeView（V）"></a>DraweeView（V）</h1><p>使用Fresco的时候，我们首先直接使用SimpleDraweeView这个官方自定义的控件，它的继承结构是这样的：<br><img src="/img/SimpleDraweeView类继承关系.png" alt="SimpleDraweeView类继承关系.png"></p>
+<p>SimpleDraweeView主要实现了setImageURI方法，设置了一个controller。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">public void setImageURI(Uri uri, @Nullable Object callerContext) &#123;</div><div class="line">  DraweeController controller = mSimpleDraweeControllerBuilder</div><div class="line">      .setCallerContext(callerContext)</div><div class="line">      .setUri(uri)</div><div class="line">      .setOldController(getController())</div><div class="line">      .build();</div><div class="line">  setController(controller);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>GenericDraweeView继承自DraweeView，实现了一个GenericDraweeHierarchy的泛型。Fresco支持高度定制，你可以通过重写DraweeHierarchy定制自己的数据处理。<br>DraweeView控制图片展示的核心业务逻辑，控件初始化的时候初始化了一个DraweeHolder帮助类，并将得到的Hierarchy以及Controller交给DraweeHolder处理。</p>
+<h1 id="DraweeHierarchy-M"><a href="#DraweeHierarchy-M" class="headerlink" title="DraweeHierarchy(M)"></a>DraweeHierarchy(M)</h1><p>Fresco实现了各种数据处理场景下界面的展示，包括：</p>
+<ul>
+<li>占位图</li>
+<li>自身图片</li>
+<li>进度</li>
+<li>错误图</li>
+<li>重试</li>
+<li>…<br>DraweeHierarchy作为model主要组织这些数据。GenericDraweeHierarchy实现了一个默认的DraweeHierarchy，因为展示的图片数据都是Drawable，针对这些场景，DraweeHierarchy实现了一个FadeDrawable类，继承自ArrayDrawable，从名字可以看出这是一个层级的Drawable，然后通过Fade某一层Alpha值，控制显示。成员变量如下：<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">private final RootDrawable mTopLevelDrawable; //Imageview最终绘制需要的Drawable。</div><div class="line">private final FadeDrawable mFadeDrawable; //所有数据整合后存放的ArrayDrawable。</div><div class="line">private final ForwardingDrawable mActualImageWrapper;  //加载成功展示的图片</div><div class="line">private final int mPlaceholderImageIndex;//占位图index</div><div class="line">private final int mProgressBarImageIndex;//进度条index</div><div class="line">private final int mActualImageIndex;//图片index</div><div class="line">private final int mRetryImageIndex;//重新加载index</div><div class="line">private final int mFailureImageIndex;//失败图index</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>在DraweeHierarchy构造的时候填充mFadeDrawable：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div></pre></td><td class="code"><pre><div class="line">mActualImageWrapper = new ForwardingDrawable(mEmptyActualImageDrawable);</div><div class="line"></div><div class="line">int numBackgrounds = (builder.getBackgrounds() != null) ? builder.getBackgrounds().size() : 0;</div><div class="line">int numOverlays = (builder.getOverlays() != null) ? builder.getOverlays().size() : 0;</div><div class="line">numOverlays += (builder.getPressedStateOverlay() != null) ? 1 : 0;</div><div class="line"></div><div class="line">// layer indices and count</div><div class="line">int numLayers = 0;</div><div class="line">int backgroundsIndex = numLayers;</div><div class="line">numLayers += numBackgrounds;</div><div class="line">mPlaceholderImageIndex = numLayers++;</div><div class="line">mActualImageIndex = numLayers++;</div><div class="line">mProgressBarImageIndex = numLayers++;</div><div class="line">mRetryImageIndex = numLayers++;</div><div class="line">mFailureImageIndex = numLayers++;</div><div class="line">int overlaysIndex = numLayers;</div><div class="line">numLayers += numOverlays;</div><div class="line"></div><div class="line">// array of layers</div><div class="line">Drawable[] layers = new Drawable[numLayers];</div><div class="line">if (numBackgrounds &gt; 0) &#123;</div><div class="line">  int index = 0;</div><div class="line">  for (Drawable background : builder.getBackgrounds()) &#123;</div><div class="line">    layers[backgroundsIndex + index++] = buildBranch(background, null);</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">layers[mPlaceholderImageIndex] = buildBranch(</div><div class="line">    builder.getPlaceholderImage(),</div><div class="line">    builder.getPlaceholderImageScaleType());</div><div class="line">layers[mActualImageIndex] = buildActualImageBranch(</div><div class="line">    mActualImageWrapper,</div><div class="line">    builder.getActualImageScaleType(),</div><div class="line">    builder.getActualImageFocusPoint(),</div><div class="line">    builder.getActualImageMatrix(),</div><div class="line">    builder.getActualImageColorFilter());</div><div class="line">layers[mProgressBarImageIndex] = buildBranch(</div><div class="line">    builder.getProgressBarImage(),</div><div class="line">    builder.getProgressBarImageScaleType());</div><div class="line">layers[mRetryImageIndex] = buildBranch(</div><div class="line">    builder.getRetryImage(),</div><div class="line">    builder.getRetryImageScaleType());</div><div class="line">layers[mFailureImageIndex] = buildBranch(</div><div class="line">    builder.getFailureImage(),</div><div class="line">    builder.getFailureImageScaleType());</div><div class="line">if (numOverlays &gt; 0) &#123;</div><div class="line">  int index = 0;</div><div class="line">  if (builder.getOverlays() != null) &#123;</div><div class="line">    for (Drawable overlay : builder.getOverlays()) &#123;</div><div class="line">      layers[overlaysIndex + index++] = buildBranch(overlay, null);</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">  if (builder.getPressedStateOverlay() != null) &#123;</div><div class="line">    layers[overlaysIndex + index] = buildBranch(builder.getPressedStateOverlay(), null);</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>DraweeHierarchy 对于属性的设置利用了构造者模式，定义了一个GenericDraweeHierarchyBuilder。GenericDraweeHierarchyBuilder可以直接在代码里初始化，也可以读取XML的配置信息。</p>
+<h1 id="DraweeController-C"><a href="#DraweeController-C" class="headerlink" title="DraweeController(C)"></a>DraweeController(C)</h1><p>DraweeController的功能包括：</p>
+<ul>
+<li><h6 id="发起数据请求，得到请求结果，刷新界面；"><a href="#发起数据请求，得到请求结果，刷新界面；" class="headerlink" title="发起数据请求，得到请求结果，刷新界面；"></a>发起数据请求，得到请求结果，刷新界面；</h6></li>
+<li><h6 id="针对界面行为事件控制数据流的处理逻辑。"><a href="#针对界面行为事件控制数据流的处理逻辑。" class="headerlink" title="针对界面行为事件控制数据流的处理逻辑。"></a>针对界面行为事件控制数据流的处理逻辑。</h6>controller 的类结构：<br>DraweeController<br>–| AbstractDraweeController<br>—-| PipelineDraweeController</li>
+</ul>
+<p>在纷繁的代码中追踪数据加载的逻辑确实好头疼，我发现单纯的从drawee来查看数据的加载过程还是太复杂，我将在imagepipeline模块整理完之后再回头整理drawee与image pipeline的交互过程，今天我们只是简单的看一下流程。<br>我们只能从最开始的view初始化看起，DraweeView的onAttachedToWindow函数中调用了attachController方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">private void attachController() &#123;</div><div class="line">  if (mIsControllerAttached) &#123;</div><div class="line">    return;</div><div class="line">  &#125;</div><div class="line">  mEventTracker.recordEvent(Event.ON_ATTACH_CONTROLLER);</div><div class="line">  mIsControllerAttached = true;</div><div class="line">  if (mController != null &amp;&amp;</div><div class="line">      mController.getHierarchy() != null) &#123;</div><div class="line">    mController.onAttach();</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这里就是view调用controller数据加载的入口。controller的onAttach方法又做了什么呢：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public void onAttach() &#123;</div><div class="line">  mEventTracker.recordEvent(Event.ON_ATTACH_CONTROLLER);</div><div class="line">  Preconditions.checkNotNull(mSettableDraweeHierarchy);</div><div class="line">  mDeferredReleaser.cancelDeferredRelease(this);</div><div class="line">  mIsAttached = true;</div><div class="line">  if (!mIsRequestSubmitted) &#123;</div><div class="line">    submitRequest(); //发起请求</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>看字面含义我们已经猜到，他在最后发起了数据的请求，我们再看看这个请求是怎么做的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">protected void submitRequest() &#123;</div><div class="line">  ...........//省略代码</div><div class="line">  mDataSource = getDataSource();</div><div class="line"> ...........//省略代码</div><div class="line">  final DataSubscriber&lt;T&gt; dataSubscriber =</div><div class="line">      new BaseDataSubscriber&lt;T&gt;() &#123;</div><div class="line">        @Override</div><div class="line">        public void onNewResultImpl(DataSource&lt;T&gt; dataSource) &#123;</div><div class="line">          ..............//获取图片成功</div><div class="line">        &#125;</div><div class="line">        @Override</div><div class="line">        public void onFailureImpl(DataSource&lt;T&gt; dataSource) &#123;</div><div class="line">          ...............//获取图片失败</div><div class="line">        &#125;</div><div class="line">        @Override</div><div class="line">        public void onProgressUpdate(DataSource&lt;T&gt; dataSource) &#123;</div><div class="line">          ..............//图片获取过程中</div><div class="line">        &#125;</div><div class="line">      &#125;;</div><div class="line">  mDataSource.subscribe(dataSubscriber, mUiThreadImmediateExecutor);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>我们看到这里利用了观察者的设计模式，得到了一个数据流，并向这个数据流注册了一个观察者。getDataSource是个虚方法，真正的实现在PipelineDraweeController和VolleyDraweeController中，默认调用Fresco的initialize方法，创建的是PipelineDraweeController，他的getDataSource实现如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">protected DataSource&lt;CloseableReference&lt;CloseableImage&gt;&gt; getDataSource() &#123;</div><div class="line">  return mDataSourceSupplier.get();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>Supplier的用法我还是第一次看到，他有一个官方的名字叫做“惰性求值”，我们传递Supplier对象，直到调用get方法时，运算才会执行。我们查看get方法的重载在AbstractDraweeControllerBuilder看到了这样一块代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">protected Supplier&lt;DataSource&lt;IMAGE&gt;&gt; getDataSourceSupplierForRequest(</div><div class="line">    final REQUEST imageRequest,</div><div class="line">    final boolean bitmapCacheOnly) &#123;</div><div class="line">  final Object callerContext = getCallerContext();</div><div class="line">  return new Supplier&lt;DataSource&lt;IMAGE&gt;&gt;() &#123;</div><div class="line">    @Override</div><div class="line">    public DataSource&lt;IMAGE&gt; get() &#123;</div><div class="line">      return getDataSourceForRequest(imageRequest, callerContext, bitmapCacheOnly);</div><div class="line">    &#125;</div><div class="line">    @Override</div><div class="line">    public String toString() &#123;</div><div class="line">      return Objects.toStringHelper(this)</div><div class="line">          .add(&quot;request&quot;, imageRequest.toString())</div><div class="line">          .toString();</div><div class="line">    &#125;</div><div class="line">  &#125;;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>没错，就是getDataSourceForRequest实现了数据的加载，我们在PipelineDraweeControllerBuilder中看到了具体实现：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">protected DataSource&lt;CloseableReference&lt;CloseableImage&gt;&gt; getDataSourceForRequest(</div><div class="line">    ImageRequest imageRequest,</div><div class="line">    Object callerContext,</div><div class="line">    boolean bitmapCacheOnly) &#123;</div><div class="line">  if (bitmapCacheOnly) &#123;</div><div class="line">    return mImagePipeline.fetchImageFromBitmapCache(imageRequest, callerContext);</div><div class="line">  &#125; else &#123;</div><div class="line">    return mImagePipeline.fetchDecodedImage(imageRequest, callerContext);</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>至此我们终于调用了ImagePipeline的fetch方法，实现了数据的请求，我们回过头来总结一下这个流程：<br>ImageView在setImageUri的过程过程中创建了一个controller，controller的创建基于builder模式，最后调用build函数，接下来的函数链是：buildController  -&gt; obtainController -&gt; obtainDataSourceSupplier -&gt; getDataSourceSupplierForRequest完成了整个controller的创建，接下来在View的onAttachedToWindow调用controller中依次调用 onAttach -&gt; submitRequest -&gt; getDataSource 然后执行get中的请求操作。</p>
+<p>Controller中同时定义了一个GestureDetector，用于对View事件的拦截，我看到主要还是在onClick事件中处理是否重新加载。</p>
+<p>至此整个图片展示的部分我们已经大致的梳理了一遍，核心还是在于model的处理，ImageView设置了一个drawable之后，control直接控制这个drawable，利用drawable的invalidateSelf函数直接刷新View，MVC模式中model是可以操作View的，这也真是MVC与MVP模式的最大区别。controller的逻辑比较简单，就是先初始化构建，然后View显示的时候执行他的数据请求操作，但是代码比较复杂，梳理起来比较麻烦，还好在梳理的过程中看到了很多优秀的设计。</p>
+<h1 id="下一页-ImagePipeline介绍"><a href="#下一页-ImagePipeline介绍" class="headerlink" title="下一页 ImagePipeline介绍"></a><a href="http://www.jianshu.com/p/116639f920b6" target="_blank" rel="external">下一页 ImagePipeline介绍</a></h1>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/09/29/Fresco源码浅析-Drawee模块（二）/" data-id="cito0mhjg00039ctounh2l0np" class="article-share-link">Delen</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/09/29/Fresco源码浅析-ImagePipeline模块（三）/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Nieuwer</strong>
+      <div class="article-nav-title">
+        
+          Fresco源码浅析-ImagePipeline模块（三）
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/09/29/Fresco源码浅析-序（一）/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Ouder</strong>
+      <div class="article-nav-title">Fresco源码浅析-序（一）</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archieven</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recente berichten</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/09/29/Android-主要的热修复方案原理分析/">Android 主要的热修复方案原理分析</a>
+          </li>
+        
+          <li>
+            <a href="/2016/09/29/RecyclerView高端定制三部曲/">RecyclerView高端定制三部曲</a>
+          </li>
+        
+          <li>
+            <a href="/2016/09/29/Dagger2从入门到会用再到暂时放弃/">Dagger2从入门到会用再到暂时放弃</a>
+          </li>
+        
+          <li>
+            <a href="/2016/09/29/Fresco源码浅析-ImagePipeline模块（三）/">Fresco源码浅析-ImagePipeline模块（三）</a>
+          </li>
+        
+          <li>
+            <a href="/2016/09/29/Fresco源码浅析-Drawee模块（二）/">Fresco源码浅析-Drawee模块（二）</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Fresco源码浅析-序（一） | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="大名鼎鼎的Fresco开源一年多了，已经有越来越多的尝鲜者开始使用。目前我们的项目对于图片的加载没有过多的需求，但对于Fresco还是充满了好。我接下来几篇博文讲围绕着他的架构设计、图片处理、缓存设计、线程管理等议题深入源码，尽可能的给出自己的一些理解。（水平有限，第一次尝试写博客，有不对的地方欢迎指正）
+Fresco优势
+内存管理bitmap是Android中内存占用的大块头，Fresco用了一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Fresco源码浅析-序（一）">
+<meta property="og:url" content="http://yoursite.com/2016/09/29/Fresco源码浅析-序（一）/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="大名鼎鼎的Fresco开源一年多了，已经有越来越多的尝鲜者开始使用。目前我们的项目对于图片的加载没有过多的需求，但对于Fresco还是充满了好。我接下来几篇博文讲围绕着他的架构设计、图片处理、缓存设计、线程管理等议题深入源码，尽可能的给出自己的一些理解。（水平有限，第一次尝试写博客，有不对的地方欢迎指正）
+Fresco优势
+内存管理bitmap是Android中内存占用的大块头，Fresco用了一">
+<meta property="og:image" content="http://yoursite.com/img/Fresco官方代码结构.png">
+<meta property="og:image" content="http://yoursite.com/img/Fresco引入包代码结构.png">
+<meta property="og:updated_time" content="2016-09-29T07:15:17.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Fresco源码浅析-序（一）">
+<meta name="twitter:description" content="大名鼎鼎的Fresco开源一年多了，已经有越来越多的尝鲜者开始使用。目前我们的项目对于图片的加载没有过多的需求，但对于Fresco还是充满了好。我接下来几篇博文讲围绕着他的架构设计、图片处理、缓存设计、线程管理等议题深入源码，尽可能的给出自己的一些理解。（水平有限，第一次尝试写博客，有不对的地方欢迎指正）
+Fresco优势
+内存管理bitmap是Android中内存占用的大块头，Fresco用了一">
+<meta name="twitter:image" content="http://yoursite.com/img/Fresco官方代码结构.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Zoeken"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Fresco源码浅析-序（一）" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/09/29/Fresco源码浅析-序（一）/" class="article-date">
+  <time datetime="2016-09-29T07:00:07.000Z" itemprop="datePublished">2016-09-29</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Fresco源码浅析-序（一）
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>大名鼎鼎的Fresco开源一年多了，已经有越来越多的尝鲜者开始使用。目前我们的项目对于图片的加载没有过多的需求，但对于Fresco还是充满了好。我接下来几篇博文讲围绕着他的架构设计、图片处理、缓存设计、线程管理等议题深入源码，尽可能的给出自己的一些理解。（水平有限，第一次尝试写博客，有不对的地方欢迎指正）</p>
+<h1 id="Fresco优势"><a href="#Fresco优势" class="headerlink" title="Fresco优势"></a>Fresco优势</h1><ul>
+<li><h6 id="内存管理"><a href="#内存管理" class="headerlink" title="内存管理"></a>内存管理</h6>bitmap是Android中内存占用的大块头，Fresco用了一个略显“流氓”的方案，将bitmap存储在共享内存区域，这样就不会计算在app分配的堆内存大小了，有效的减少了OOM，但这毕竟是钻了Android的一个空子，5.0以上的版本他及时更改了过来。不过这也可以作为一种思路，学习一下如何高效利用共享内存，以备我们随时“流氓”一下^_^</li>
+<li><h6 id="支持更多的图片格式"><a href="#支持更多的图片格式" class="headerlink" title="支持更多的图片格式"></a>支持更多的图片格式</h6>Fresco支持本地图片和网络图片，支持GIF和WebP格式的图片，</li>
+<li><h6 id="渐进式图片加载"><a href="#渐进式图片加载" class="headerlink" title="渐进式图片加载"></a>渐进式图片加载</h6>渐进式图片能带来更好的用户体验，Fresco支持这个格式，而且使用的时候只需要像普通图片一样提供Url即可，不过这还需要后端哥哥们的配合。。。</li>
+<li><h6 id="封装了各种场景下的图片展示"><a href="#封装了各种场景下的图片展示" class="headerlink" title="封装了各种场景下的图片展示"></a>封装了各种场景下的图片展示</h6><p>圆角，自定义居中，占位图，错误图，loading图，再次加载图，你能想到的场景Fresco都帮你想到了，使用起来及其方便。</p>
+<h1 id="源码分析要点"><a href="#源码分析要点" class="headerlink" title="源码分析要点"></a>源码分析要点</h1><p>github上down下来的Fresco代码结构是这样的：<br><img src="/img/Fresco官方代码结构.png" alt="Fresco官方代码结构.png"><br>看到这么多module是不是有点爆炸的感觉，反正我第一眼是炸了。。<br>然后我在另外一个工程引入了一下Fresco包，给我下载的代码结构是这样的：<br><img src="/img/Fresco引入包代码结构.png" alt="Fresco引入包代码结构.png"><br>对比看起来就比较清晰了，主要是Facebook的core包，drawee和imagepipeline。core包是Facebook的基础包，这里面有很多工具类可以借用，drawee主要是用来图片的展示，imagepipeline则设计了一个图片加载框架，接下来讲主要围绕这两块深入到Fresco的源码中去（一直在尝试深入，其实只是在门口游荡，惭愧）。</p>
+</li>
+<li><p><a href="http://www.jianshu.com/p/edc36431fede" target="_blank" rel="external"> drawee</a></p>
+</li>
+<li><a href="http://www.jianshu.com/p/116639f920b6" target="_blank" rel="external">imagepipeline</a></li>
+</ul>
+<h1 id="简单使用"><a href="#简单使用" class="headerlink" title="简单使用"></a>简单使用</h1><p>Fresco使用起来特别简单，如果你是已经在代码中使用了大量网络图片，那改动可能会有点大，因为view需要改用Fresco默认提供的一个叫SimpleDraweeView的ImageView，这要涉及到xml和Java代码的改动。不过使用起来确实超级方便，直接调用setimageuri方法就完事了，更多的关于初始化设置占位图、错误图、loading图、重复加载图详见官方说明，这里不再赘述了（有时间我准备改造一下Fresco的使用方式，还是用我们熟悉的传入ImageView和Uri的方式，这样集成和替换图片加载库的代价就会很低，如果觉得有价值请顶我，让我更有动力）。</p>
+<h1 id="文献引用"><a href="#文献引用" class="headerlink" title="文献引用"></a>文献引用</h1><blockquote>
+<p><a href="http://www.fresco-cn.org" target="_blank" rel="external">Fresco 中文文档</a><br><a href="http://www.cnblogs.com/pandapan/p/4634454.html" target="_blank" rel="external">Fresco 源码解析</a></p>
+</blockquote>
+<h1 id="下一页-Drawee模块介绍"><a href="#下一页-Drawee模块介绍" class="headerlink" title="下一页 Drawee模块介绍"></a><a href="http://www.jianshu.com/p/edc36431fede" target="_blank" rel="external">下一页 Drawee模块介绍</a></h1>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/09/29/Fresco源码浅析-序（一）/" data-id="cito0mhjj00059cto8gcz3wjr" class="article-share-link">Delen</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/09/29/Fresco源码浅析-Drawee模块（二）/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Nieuwer</strong>
+      <div class="article-nav-title">
+        
+          Fresco源码浅析-Drawee模块（二）
+        
+      </div>
+    </a>
+  
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archieven</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recente berichten</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/09/29/Android-主要的热修复方案原理分析/">Android 主要的热修复方案原理分析</a>
+          </li>
+        
+          <li>
+            <a href="/2016/09/29/RecyclerView高端定制三部曲/">RecyclerView高端定制三部曲</a>
+          </li>
+        
+          <li>
+            <a href="/2016/09/29/Dagger2从入门到会用再到暂时放弃/">Dagger2从入门到会用再到暂时放弃</a>
+          </li>
+        
+          <li>
+            <a href="/2016/09/29/Fresco源码浅析-ImagePipeline模块（三）/">Fresco源码浅析-ImagePipeline模块（三）</a>
+          </li>
+        
+          <li>
+            <a href="/2016/09/29/Fresco源码浅析-Drawee模块（二）/">Fresco源码浅析-Drawee模块（二）</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

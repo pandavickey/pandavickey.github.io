@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Dagger2从入门到会用再到暂时放弃 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Dagger2是一种依赖注入框架，目前由Google维护。说到依赖注入，标准定义是目标类中所依赖的其他的类的初始化过程，不是通过手动编码的方式创建，而是通过技术手段可以把其他的类的已经初始化好的实例自动注入到目标类中。说简单就是一次构建，到处注入。目前只能理解这个定义，具体的应用场景坑还没踩够，还不能意会。
+这两天也看了不少Dagger2的Blog,大部分都翻译自tasting-dagger-2-">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Dagger2从入门到会用再到暂时放弃">
+<meta property="og:url" content="http://yoursite.com/2016/09/29/Dagger2从入门到会用再到暂时放弃/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Dagger2是一种依赖注入框架，目前由Google维护。说到依赖注入，标准定义是目标类中所依赖的其他的类的初始化过程，不是通过手动编码的方式创建，而是通过技术手段可以把其他的类的已经初始化好的实例自动注入到目标类中。说简单就是一次构建，到处注入。目前只能理解这个定义，具体的应用场景坑还没踩够，还不能意会。
+这两天也看了不少Dagger2的Blog,大部分都翻译自tasting-dagger-2-">
+<meta property="og:image" content="http://yoursite.com/img/Fernando Cejas.png">
+<meta property="og:updated_time" content="2016-09-29T07:20:42.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Dagger2从入门到会用再到暂时放弃">
+<meta name="twitter:description" content="Dagger2是一种依赖注入框架，目前由Google维护。说到依赖注入，标准定义是目标类中所依赖的其他的类的初始化过程，不是通过手动编码的方式创建，而是通过技术手段可以把其他的类的已经初始化好的实例自动注入到目标类中。说简单就是一次构建，到处注入。目前只能理解这个定义，具体的应用场景坑还没踩够，还不能意会。
+这两天也看了不少Dagger2的Blog,大部分都翻译自tasting-dagger-2-">
+<meta name="twitter:image" content="http://yoursite.com/img/Fernando Cejas.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Zoeken"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Dagger2从入门到会用再到暂时放弃" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/09/29/Dagger2从入门到会用再到暂时放弃/" class="article-date">
+  <time datetime="2016-09-29T07:06:07.000Z" itemprop="datePublished">2016-09-29</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Dagger2从入门到会用再到暂时放弃
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Dagger2是一种依赖注入框架，目前由Google维护。说到依赖注入，标准定义是目标类中所依赖的其他的类的初始化过程，不是通过手动编码的方式创建，而是通过技术手段可以把其他的类的已经初始化好的实例自动注入到目标类中。说简单就是一次构建，到处注入。目前只能理解这个定义，具体的应用场景坑还没踩够，还不能意会。</p>
+<p>这两天也看了不少Dagger2的Blog,大部分都翻译自<a href="http://fernandocejas.com/2015/04/11/tasting-dagger-2-on-android/" target="_blank" rel="external">tasting-dagger-2-on-android</a> 这篇文章再修修改改，参考的工程主要是<a href="https://github.com/android10/Android-CleanArchitecture" target="_blank" rel="external">Android-CleanArchitecture</a> 关于Clean框架用Dagger实现以及<a href="https://github.com/google/dagger" target="_blank" rel="external">官方</a>咖啡机的故事。主要实现的代码总结起来是以下几行代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">public class Hello &#123;</div><div class="line">    @Inject Hello() &#123;  //Inject注解构造函数</div><div class="line">    &#125;</div><div class="line">    public void say() &#123;</div><div class="line">        System.out.println(“hello world”);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">@Component  //Component组件绑定宿主</div><div class="line">public interface HelloComponent &#123;</div><div class="line">    void inject(HelloDagger dagger);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">public class HelloDagger &#123;</div><div class="line">    @Inject</div><div class="line">    static Hello hello;//声明注入依赖</div><div class="line"></div><div class="line">    public static void main(String[] args) &#123;</div><div class="line">        DaggerHelloComponent.create().inject(new HelloDagger());//Dagger默认生成DaggerHelloComponent类，调用inject方法注入对象</div><div class="line">        hello.say();  //对象已经初始化了</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这是最简单的一个Dagger2的实例，当然Hello类是无参的构造函数，如果有参构造的话还需要引入module和provides两个注解，代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">public class Hello &#123;</div><div class="line">    private String hello;</div><div class="line">    @Inject Hello(String hello) &#123;  //有参构造函数</div><div class="line">        this.hello = hello;</div><div class="line">    &#125;</div><div class="line">    public void say() &#123;</div><div class="line">        System.out.println(hello);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">@Module</div><div class="line">public class HelloModule &#123;</div><div class="line">    String hello = &quot;hello&quot;;</div><div class="line">    public HelloModule(String hello) &#123;</div><div class="line">        this.hello = hello;</div><div class="line">    &#125;</div><div class="line">    @Provides Hello getHello()&#123;  //Provides注解返回依赖的对象</div><div class="line">        return new Hello(hello);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">@Component(modules = HelloModule.class)  //绑定依赖对象和宿主</div><div class="line">public interface HelloComponent &#123;</div><div class="line">    void inject(HelloDagger dagger);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">public class HelloDagger &#123;</div><div class="line">    @Inject</div><div class="line">    static Hello hello;</div><div class="line">    public static void main(String[] args) &#123;</div><div class="line">        DaggerHelloComponent.builder()</div><div class="line">                .helloModule(new HelloModule(&quot;hello world&quot;))  //创建module对象</div><div class="line">                .build()</div><div class="line">                .inject(new HelloDagger());//注入</div><div class="line">        hello.say();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>比较常用的就是@Inject、@Module、@Provides以及@Component注解，inject在宿主中声明依赖对象，module和provides配合初始化依赖对象，component连接彼此，完成注入过程。整个过程就是一个A a = new A()的过程，只是彼此分离，还是一个解耦的目的。</p>
+<p>在构建代码的过程中我们可能还感受不到依赖注入的好处，当程序在膨胀，业务不断累积的过程中，我们发现我们很难遵守面向对象六大原则之依赖倒置原则。如果我们使用了Dagger，当依赖对象发生改变时，我们的Inject和component模块都不需要改变，只需要改变module模块，而这一模块相对独立，变动起来真的随心所欲。</p>
+<p>Dagger2终归还是一个模块解耦的利器，坑还没踩够，所以体会不到真正的好处，只能暂时放弃了。就像Fernando Cejas说的，Dagger2的好处主要有三点：</p>
+<ul>
+<li>Since dependencies can be injected and configured externally we can reuse those components.</li>
+<li>When injecting abstractions as collaborators, we can just change the implementation of any object without having to make a lot of changes in our codebase, since that object instantiation resides in one place isolated and decoupled.</li>
+<li>Dependencies can be injected into a component: it is possible to inject mock implementations of these dependencies which makes testing easier.</li>
+</ul>
+<p>最后大神镇楼<br><img src="/img/Fernando Cejas.png" alt="Fernando Cejas.png"></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/09/29/Dagger2从入门到会用再到暂时放弃/" data-id="cito0mhjc00019ctos5ubdf54" class="article-share-link">Delen</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/09/29/RecyclerView高端定制三部曲/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Nieuwer</strong>
+      <div class="article-nav-title">
+        
+          RecyclerView高端定制三部曲
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/09/29/Fresco源码浅析-ImagePipeline模块（三）/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Ouder</strong>
+      <div class="article-nav-title">Fresco源码浅析-ImagePipeline模块（三）</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archieven</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recente berichten</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/09/29/Android-主要的热修复方案原理分析/">Android 主要的热修复方案原理分析</a>
+          </li>
+        
+          <li>
+            <a href="/2016/09/29/RecyclerView高端定制三部曲/">RecyclerView高端定制三部曲</a>
+          </li>
+        
+          <li>
+            <a href="/2016/09/29/Dagger2从入门到会用再到暂时放弃/">Dagger2从入门到会用再到暂时放弃</a>
+          </li>
+        
+          <li>
+            <a href="/2016/09/29/Fresco源码浅析-ImagePipeline模块（三）/">Fresco源码浅析-ImagePipeline模块（三）</a>
+          </li>
+        
+          <li>
+            <a href="/2016/09/29/Fresco源码浅析-Drawee模块（二）/">Fresco源码浅析-Drawee模块（二）</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
